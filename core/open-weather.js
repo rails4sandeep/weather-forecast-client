@@ -1,6 +1,5 @@
 'use strict';
 
-const path = require('path');
 const superAgent = require('superagent');
 let conf = require('../configuration/open-weather');
 const date = require('date-and-time');
@@ -54,7 +53,6 @@ class OpenWeather {
         } catch (e) {
             console.log(e.message);
         }
-
     };
 
     /*setToFiveDayForecast cleans up the sunny days array data and makes sure it has only
@@ -69,7 +67,6 @@ class OpenWeather {
         } catch (e) {
             console.log(e.message);
         }
-
     };
 
     /*open weather api returns the dates in YYYY-MM-DD format. This function parses the array of the dates
@@ -80,8 +77,6 @@ class OpenWeather {
         } catch (e) {
             console.log(e.message);
         }
-
-
     };
 
     /*summarizeWeatherForecast creates an object containing a summary of the sunny weather forecast
