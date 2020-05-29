@@ -4,7 +4,8 @@
   "description": "A weather forecast client using the open weather api",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "sydney-forecast": "node index.js"
   },
   "repository": {
     "type": "git",
