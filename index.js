@@ -10,7 +10,13 @@ let getSunnyWeatherSummary = async () => {
         const forecasts = await openWeather.getFiveDayForecast(config.key, config.sydneyCode);
         const sunnyDays = openWeather.getSunnyDays(forecasts);
         const summary = openWeather.summarizeWeatherForecast(sunnyDays);
-        console.log(summary);
+        console.log(summary.message);
+        if(summary.sunnyDays != undefined) {
+
+            for(let day of sunnyDays) {
+                console.log(day);
+            }
+        }
     } catch (e) {
         console.log(e.message);
     }
