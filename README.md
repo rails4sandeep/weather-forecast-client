@@ -2,7 +2,7 @@
 
 
 ### Introduction
-This Open Weather Client is written in Javascript.
+Solution for the Open Weather Client exercise
 
 ### Requirements
 * `Nodejs` (instructions are available here: https://nodejs.org/en/download/)
