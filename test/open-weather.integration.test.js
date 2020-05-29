@@ -1,3 +1,4 @@
+'use strict';
 const OpenWeather = require('../core/open-weather');
 const openWeather = new OpenWeather();
 
