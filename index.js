@@ -6,13 +6,13 @@ const OpenWeather = require('./core/open-weather');
 const openWeather = new OpenWeather();
 
 let getSunnyWeatherSummary = async () => {
-        const forecasts = await openWeather.getFiveDayForecast(config.key, config.sydneyCode);
-        const sunnyDays = openWeather.getSunnyDays(forecasts);
-        const summary = openWeather.summarizeWeatherForecast(sunnyDays);
+        const forecastsData = await openWeather.getFiveDayForecast(config.key, config.sydneyCode);
+        const sunnyData = openWeather.getSunnyDays(forecastsData);
+        const summary = openWeather.summarizeWeatherForecast(sunnyData);
         console.log(summary.message);
         if(summary.sunnyDays !== undefined) {
 
-            for(let day of sunnyDays) {
+            for(let day of summary.sunnyDays) {
                 console.log(day);
             }
         }
