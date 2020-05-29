@@ -1,3 +1,5 @@
+'use strict';
+
 const OpenWeather = require('../core/open-weather');
 const openWeather = new OpenWeather();
 
@@ -38,7 +40,7 @@ describe('OpenWeather class', () => {
         let days = openWeather.changeToAUFormat(daysSample);
         expect(days).toBeDefined();
         expect(days).toBeInstanceOf(Array);
-        for(day of days) {
+        for(let day of days) {
             expect(new Date(day)).toBeInstanceOf(Date);
         }
         expect(new Date(days[0])).toBeInstanceOf(Date);
