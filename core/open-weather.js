@@ -11,30 +11,29 @@ let sunnyDays = [];
 
 class OpenWeather {
 
-    getFiveDayForecast = async (cityCode) => {
+    getFiveDayForecast = async (key, cityCode) => {
         try {
             let res = await superAgent
-                .get(conf.host + 'data/2.5/forecast?id=' + conf.sydneyCode + '&appid=' + conf.key);
-            let forecasts = res.body.list;
-            return forecasts;
-
+                .get(conf.host + 'data/2.5/forecast?id=' + cityCode + '&appid=' + key);
+            return res.body.list;
         } catch (e) {
-            return e.message;
+            console.log(e.message);
+            return [];
         }
     };
 
     getSunnyDays = (forecasts) => {
         try {
             for(let forecast of forecasts){
-                if (forecast['main']['temp_min'] >= (20+273.15))
+                if (forecast.main.temp_min >= (conf.sunny +conf.kelvinToCelsius))
                     sunnyDays.push(forecast.dt_txt.substring(0,10));
             }
-            sunnyDays = this.removeDuplicates(sunnyDays);
-            sunnyDays = this.setToFiveDayForecast(sunnyDays);
-            sunnyDays = this.changeToAUFormat(sunnyDays);
-            return sunnyDays;
+            const sunnyDaysWithoutDuplicates = this.removeDuplicates(sunnyDays);
+            const fiveDayForecast = this.setToFiveDayForecast(sunnyDaysWithoutDuplicates);
+            const forecastInAUFormat = this.changeToAUFormat(fiveDayForecast);
+            return forecastInAUFormat;
         } catch (e) {
-            return e.message;
+            console.log(e.message);
         }
     };
 
@@ -42,7 +41,7 @@ class OpenWeather {
         try {
             return Array.from(new Set(days));
         } catch (e) {
-            return e.message;
+            console.log(e.message);
         }
 
     };
@@ -55,7 +54,7 @@ class OpenWeather {
             }
             return days;
         } catch (e) {
-            return e.message;
+            console.log(e.message);
         }
 
     };
@@ -64,7 +63,7 @@ class OpenWeather {
         try {
             return days.map(day => date.format(new Date(day), auPattern));
         } catch (e) {
-            e.message;
+            console.log(e.message);
         }
 
 
@@ -72,17 +71,16 @@ class OpenWeather {
 
     summarizeWeatherForecast = (sunnyDays) => {
         try {
-            console.log(sunnyDays);
             let summary = {};
             if (sunnyDays.length > 0) {
                 summary.message = `There are ${sunnyDays.length} sunny days in the next five day forecast`;
                 summary.sunnyDays = sunnyDays;
             } else {
-                summary.message = 'There are no sunny days in the next five day forecast'
+                summary.message = 'There are no sunny days in the next five day forecast';
             }
             return summary;
         } catch (e) {
-            return e.message;
+            console.log(e);
         }
     };
 }
