@@ -14,7 +14,7 @@ display the version of node installed in the machine
 * Clone the repository `git clone https://github.com/rails4sandeep/weather-forecast-client.git`
 * `cd weather-forecast-client`
 * `npm install` in the root of the directory
-* Configure the open weather api key in `configuration/open-weather.js` (get one here https://home.openweathermap.org/)
+* Set the environment variable OPEN_WEATHER_KEY or configure it in `configuration/open-weather.js` (get one here https://home.openweathermap.org/)
 * Verify the setup and installation by running the tests `npm test` 
 * `npm run sydney-forecast` to know the forecast if it is going to be sunny in the next five days
 
