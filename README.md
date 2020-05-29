@@ -54,8 +54,7 @@ middleware for a simple `expressjs` app.
 directly reading from the config data. This allows for easy testing and reuse it to get weather
 forecast for other cities.
 * Tests are written using jest framework. Functions and return value types are mocked for easier unit testing.
-* If an exception occurs with the open weather api, the client prints the exception. It also prints
-a message `There are no sunny days in the next five day forecast` as the exception is handled
-by returning an empty Array to stop the cascading of the error. This should give the user
+* If an exception occurs with the open weather api, the client prints the exception with a message`An error occured communicating with open weather api`
+ The exception is handled by returning an empty Array to stop the cascading of the error. This should give the user
 an idea if there is something to fix with the open weather api (api key, invalid city code, etc)
 
