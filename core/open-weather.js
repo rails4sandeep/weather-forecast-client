@@ -6,41 +6,54 @@ const date = require('date-and-time');
 const pattern = date.compile('YYYY-MM-DD');
 const auPattern = date.compile('DD-MM-YYYY');
 const today = date.format(new Date(), pattern);
+let forecastsData = {};
+let sunnyData = {};
 
 class OpenWeather {
 
     /*
         getFiveDayForecast function takes open weather api key and the city code as arguments and
-        returns an array of the 3 hour forecasts for next five days. It returns an empty array if
-        an exception occurs in the open weather api
+        returns an Object containing an array of the 3 hour forecasts for next five days. It returns an empty array if
+        an exception occurs in the open weather api. It adds a status 'success' if no exception occurs in communicating
+        with the open weather api. If an error occurs, it adds a status 'error'. Returning the empty array with status
+        'error' helps in stopping the cascading of the error and gives a readable output to the user.
     */
+
     getFiveDayForecast = async (key, cityCode) => {
         try {
             let res = await superAgent
             .get(`${conf.host}data/2.5/forecast?id=${cityCode}&appid=${key}`);
-            return res.body.list;
+            forecastsData.status = 'success';
+            forecastsData.forecasts = res.body.list;
+            return forecastsData;
         } catch (e) {
             console.log(e.message);
-            return [];
+            forecastsData.status = 'error';
+            forecastsData.forecasts = [];
+            return forecastsData;
         }
     };
 
-    /*getSunnyDays will take an array of forecasts as arguments. It gathers all the sunny days
-    * based on the expectation that a day with temparature more than 20 degrees celsius in a sunny day.
-    * open weather api mentions temparatures in kelvin. they are converted to celsius during processing.
+    /*getSunnyDays will take an Object containing status and an Array of forecasts as arguments. It gathers all the sunny days
+    * based on the expectation that a day with temperature more than 20 degrees celsius in a sunny day.
+    * open weather api mentions temperatures in kelvin. they are converted to celsius during processing.
     * Duplicates in the array are removed. The array data is cleaned up to have data related to the next five
-    * days only. Finally, the data in the arrays is changed to AU format.*/
-    getSunnyDays = (forecasts) => {
+    * days only. Finally, the data in the arrays is changed to AU format. It returns an object containing status and sunny days*/
+    getSunnyDays = (forecastsData) => {
         try {
+            sunnyData.status = forecastsData.status;
+            sunnyData.days = [];
             let sunnyDays = [];
-            for(let forecast of forecasts){
-                if (forecast.main.temp_min >= (conf.sunny +conf.kelvinToCelsius))
-                    sunnyDays.push(forecast.dt_txt.substring(0,10));
+            if(forecastsData.status === 'success') {
+                for(let forecast of forecastsData.forecasts){
+                    if (forecast.main.temp_min >= (conf.sunny +conf.kelvinToCelsius))
+                        sunnyDays.push(forecast.dt_txt.substring(0,10));
+                }
+                const sunnyDaysWithoutDuplicates = this.removeDuplicates(sunnyDays);
+                const fiveDayForecast = this.setToFiveDayForecast(sunnyDaysWithoutDuplicates);
+                sunnyData.days = this.changeToAUFormat(fiveDayForecast);
             }
-            const sunnyDaysWithoutDuplicates = this.removeDuplicates(sunnyDays);
-            const fiveDayForecast = this.setToFiveDayForecast(sunnyDaysWithoutDuplicates);
-            const forecastInAUFormat = this.changeToAUFormat(fiveDayForecast);
-            return forecastInAUFormat;
+            return sunnyData;
         } catch (e) {
             console.log(e.message);
         }
@@ -80,14 +93,14 @@ class OpenWeather {
     };
 
     /*summarizeWeatherForecast creates an object containing a summary of the sunny weather forecast
-    * for the next five days*/
-    summarizeWeatherForecast = (sunnyDays) => {
+    * for the next five days.*/
+    summarizeWeatherForecast = (sunnyData) => {
         try {
             let summary = {};
-            summary.message = 'There are no sunny days in the next five day forecast';
-            if (sunnyDays.length > 0) {
-                summary.message = `There are ${sunnyDays.length} sunny days in the next five day forecast`;
-                summary.sunnyDays = sunnyDays;
+            summary.message = 'An error occured communicating with open weather api';
+            if (sunnyData.status === 'success') {
+                summary.sunnyDays = sunnyData.days;
+                summary.message = `Number of sunny days in the next five days forecast in Sydney: ${summary.sunnyDays.length}`;
             }
             return summary;
         } catch (e) {
